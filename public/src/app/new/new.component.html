@@ -1,0 +1,40 @@
+ <!-- <h2>{{newTitle}}</h2>  -->
+
+ <div style="text-align:center">
+    <h1>{{newTitle}}</h1>
+  </div>
+
+<div class="container">
+    <form (submit)="submitPet()" #form_data="ngForm">
+      <p>{{newPet | json }}</p>
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" name="newPet.name" [(ngModel)]="newPet.name" required>
+        <div style="color:red">{{errors.name}}</div>
+      </div>
+      <div class="form-group">
+          <label for="type">Type</label>
+          <input type="text" class="form-control" id="type" name="newPet.type" [(ngModel)]="newPet.type" required>
+          <div style="color:red">{{errors.type}}</div>
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <input type="text" class="form-control" id="description "name="description" [(ngModel)]="newPet.description" required>
+            <div style="color:red">{{errors.description}}</div>
+        </div>
+        <div class="form-group">
+            <label for="skills">Skills:</label>
+            <br>
+            <strong>Skill 1:</strong>
+            <input type="text" class="form-control" id="skills" name="skills" [(ngModel)]="newPet.skill1">
+            <strong>Skill 2:</strong>
+            <input type="text" class="form-control" id="skills" name="skills" [(ngModel)]="newPet.skill2">
+            <strong>Skill 3:</strong>
+            <input type="text" class="form-control" id="skills" name="skills" [(ngModel)]="newPet.skill3">
+        </div>
+
+      <button type="submit" class="btn btn-success">Submit</button>    
+      <button class="btn btn-info" (click)="home()">Cancel</button>
+    </form>
+  </div>
+<hr>
