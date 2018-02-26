@@ -8,7 +8,7 @@ import { HttpService } from '../http.service';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  Hometitle = "These pets are looking for a home!";
+  Hometitle = "These pets are looking for a HOME!";
   pets: any;
   message: any;
 
