@@ -1,4 +1,6 @@
 # PetShelter-angular-express
+An angular app with an express and MongoDB backend. A pet-shelter page with add, edit, adopt pet pages using validations passed from the back->front-end (json data is rendered as it is typed on the page to demonstrate the functionality). 
+
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.3.2.
 
