@@ -1,6 +1,46 @@
-<div style="text-align:center">
+<div style="text-align:left">
   <h2>{{Hometitle}}</h2>
-  <a [routerLink]="['new']">Add a pet to the shelter</a>
+</div>
+  <button class="btn btn-info" [routerLink]="['new']">  Add New Product  </button> 
+
+  
+
+
+
+<table style="width:100%">
+    <tr>
+      <th>Id</th>
+      <th>Name</th>
+      <th>Price</th>
+      <th>Quantity</th>
+      <th>Actions</th>
+    </tr>
+</table>
+<div *ngFor="let product of products">
+<table style="width:100%">
+  <td>{{product._id}}</td>
+  <td>{{product.name}}</td>
+  <td>{{product.price}}</td>
+  <td>{{product.quantity}}</td>
+  <td><button class="btn btn-info" [routerLink]="['/products', product._id]">  Details  </button> <button class="btn btn-info" [routerLink]="['edit', product._id]">  Edit  </button></td>
+</table>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <!-- <a [routerLink]="['new']">Add a pet to the shelter</a>
 </div>
   <table style="width:100%">
     <tr>
@@ -17,6 +57,6 @@
         <td><button class="btn btn-info" [routerLink]="['details', pet._id]">  Details  </button>         <button class="btn btn-info" [routerLink]="['edit', pet._id]">  Edit  </button></td>
       </tr>
     </table>
-  </div>
+  </div> -->
 
 

@@ -1,7 +1,6 @@
-console.log('********* server.js **********');
+console.log('********* SERVER **********');
 // variables
 const port = 8000
-const dbUrl = 'mongodb://localhost/petAPI';
 // requirements
 let mongoose = require( 'mongoose' );
 let validate = require('mongoose-validator');    
@@ -18,93 +17,82 @@ app.use( bodyparser.json());
 app.use( express.static( __dirname + "/public/dist" ) );
 
 //connection
-mongoose.connect(dbUrl);
+mongoose.connect( "mongodb://localhost/ProductAPI" );
 
 // test routes connection 
-connection = mongoose.connect('mongodb://localhost/petAPI')
 let Schema = mongoose.Schema;
 
 let constraints = {
     name: {
         type: String,
         minlength: [3, 'Name must be at least 3 characters.'],
-        maxlength: [50, 'Name should not be more than 50 characters'],
-        required: [true, 'Please provide your animals name'],
-        unique: [true, "This name is already registered with another pet in the shelter. Please use a unique name."]
+        required: [true, 'Please provide a product name'],
     },
-    type: {
-        type: String,
-        minlength: [3, 'Type must be at least 3 characters.'],
-        maxlength: [50, 'Type should not be more than 50 characters'],
-        required: [true, 'Please provide a pet type (i.g. dog or cat)'],
-        unique: false,
+    quantity: {
+        type: Number,
+        min: [1, 'The quantity must be greater than 0.'],
+        required: [true, 'Please provide the quantity of this product'],
     },
-    desc: {
-        type: String,
-        minlength: [3, 'Description must be at least 3 characters.'],
-        maxlength: [50, 'Description should not be more than 50 characters'],
-        required: [true, "Please submit a description of your animal"],
-        unique: false,
-    },
-    likes: {
-        type: Number
-    },
-    skills: {
-        type: Array,
-        minlength: 3,
-        laxlength: 50, 
-        required: false
+    price: {
+        type: Number,
+        min: [1, 'Product price must be a number greater than 0.'],
+        required: [true, "Please submit a price for this product "],
     },
 }
 console.log("CONSTRAINTS: ", constraints)
 
 // schema
-let PetSchema = new Schema({
+let ProductSchema = new Schema({
     name: constraints.name,
-    type: constraints.type,
-    description: constraints.desc,
-    skills: constraints.skills,
-    likes: constraints.likes,
+    quantity: constraints.quantity,
+    price: constraints.price,
 }, {timestamps: true});
-Pet = mongoose.model('Pet', PetSchema);
-Pet.collection.createIndex({"name": 1}, {unique: true});
+Product = mongoose.model('Product', ProductSchema);
 
 app.get('/constraints', function(req,res){
     res.json(constraints);
 })
 
-//create a pet
-app.post('/pets', function(req, res) {
+//#1 create a product
+app.post('/product', function(req, res) {
     console.log('****** POST PET - Routes ******');
-    console.log('req.body.skill1: ', req.body.skill1);
-    console.log('req.body.skill1: ', req.body.skill2);
-    console.log('req.body.skill1: ', req.body.skill3);
-    if(req.body.skill1) {
-        var skills = {}
-        skills['skill1'] = (req.body.skill1)
-    }
-    if(req.body.skill1) {
-        skills['skill2'] = req.body.skill2;
-    }
-    if(req.body.skill1) {
-        skills['skill3'] = req.body.skill3
-    }
-    var pet = new Pet({name: req.body.name, type: req.body.type, description: req.body.description, skills: skills});
-    pet.save(function(err, data) {
+    var product = new Product({name: req.body.name, quantity: req.body.quantity, price: req.body.price});
+    product.save(function(err, data) {
         if (err) {
             console.log("ERRORS at POST route.js: ", err);
             res.json({message: "Error", error: err});
         } else {
             res.json({message: "Success", data : data});
-            console.log('****** app.post /pet: ', data)
+            console.log('****** SERVER - POST PRODUCT: ', data)
         }
     });
 });
-
-//get all the pets
-app.get('/pets', function(req, res){
+// {
+//     "name": "aaaa",
+//     "quantity": 10,
+//     "price": 14
+// }
+// {
+//     "message": "Success",
+//     "data": {
+//         "name": "aaaa",
+//         "quantity": [
+//             10
+//         ],
+//         "price": [
+//             14
+//         ],
+//         "_id": "5a94a7d71272f85694d29f5b",
+//         "createdAt": "2018-02-27T00:35:35.188Z",
+//         "updatedAt": "2018-02-27T00:35:35.188Z",
+//         "__v": 0
+//     }
+// }
+// 
+// #2 get all the products 
+app.get('/products', function(req, res){
     console.log('****** Get ALL PETS - Routes ******');
-    Pet.find({}, function(err, data){
+    Product.find({}, function(err, data){
         if (err) {
             // console.log(' ******* ERROR at GET ALL route ****** : ', data);
             res.json({message: "Error", error: err});
@@ -113,12 +101,31 @@ app.get('/pets', function(req, res){
             res.json({message: "Success", data : data});
         }  
     })
-    .sort("type");
+    .sort("quantity");
 });
-//get one pet 
-app.get('/pets/:id', function(req, res){
+// {
+//     "message": "Success",
+//     "data": [
+//         {
+//             "quantity": [
+//                 10
+//             ],
+//             "price": [
+//                 14
+//             ],
+//             "_id": "5a94a7d71272f85694d29f5b",
+//             "name": "aaaa",
+//             "createdAt": "2018-02-27T00:35:35.188Z",
+//             "updatedAt": "2018-02-27T00:35:35.188Z",
+//             "__v": 0
+//         }
+//     ]
+// }
+
+// #3 get one product 
+app.get('/product/:id', function(req, res){
     console.log('****** Get PET by Id - Routes ******');
-    Pet.findById(req.params.id, function(err, data){
+    Product.findById(req.params.id, function(err, data){
         if (err) {
             // console.log(' ******* ERROR at GET ALL route ****** : ', data);
             res.json({message: "Error", error: err});
@@ -128,10 +135,27 @@ app.get('/pets/:id', function(req, res){
         }  
     })
 });
-//delete a pet
-app.delete('/pets/:id', function(req, res) {
+// {
+//     "message": "Success",
+//     "data": {
+//         "quantity": [
+//             10
+//         ],
+//         "price": [
+//             14
+//         ],
+//         "_id": "5a94a7d71272f85694d29f5b",
+//         "name": "aaaa",
+//         "createdAt": "2018-02-27T00:35:35.188Z",
+//         "updatedAt": "2018-02-27T00:35:35.188Z",
+//         "__v": 0
+//     }
+// }
+
+// #4 delete a product
+app.delete('/product/:id', function(req, res) {
     console.log('****** SERVER - delete Pet *****')
-    Pet.findByIdAndRemove(req.params.id, function(err, data) {
+    Product.findByIdAndRemove(req.params.id, function(err, data) {
         if (err) {
             console.log(' ******* ERR at DELETE route ****** : ', err);
             res.json({message: "Error", error: err});
@@ -141,56 +165,66 @@ app.delete('/pets/:id', function(req, res) {
             }
         })
     });
-
-
-
-
-// update a pet by id.param 
-app.put('/pets/:id', function(req, res){
-    console.log('****** SERVER - Update Pet - ******', req.body.skill1);
-    var pet = {};
-    pet.name = req.body.name;
-    pet.type = req.body.type;
-    pet.description = req.body.description;
-    pet.skills = {};
-    if(req.body.skill1) {
-        pet.skills['skill1'] = req.body.skill1;
-    }
-    if(req.body.skill1) {
-        pet.skills['skill2'] = req.body.skill2;
-    }
-    if(req.body.skill1) {
-        pet.skills['skill3'] = req.body.skill3;
-    }
-
-    // 
-    Pet.update({_id: req.params.id}, pet, {runValidators: true },function(err, data) {
+    // {
+    //     "message": "Success",
+    //     "data": {
+    //         "quantity": [
+    //             10
+    //         ],
+    //         "price": [
+    //             14
+    //         ],
+    //         "_id": "5a94a7d71272f85694d29f5b",
+    //         "name": "aaaa",
+    //         "createdAt": "2018-02-27T00:35:35.188Z",
+    //         "updatedAt": "2018-02-27T00:35:35.188Z",
+    //         "__v": 0
+    //     }
+    // }
+// 
+// #5 update a product
+app.put('/product/:id', function(req, res){
+    console.log('****** SERVER - Update PRODUCT()******', req.body.name);
+    var product = {};
+    product.name = req.body.name;
+    product.quantity = req.body.quantity;
+    product.price = req.body.price;
+    Product.update({_id: req.params.id}, product, {runValidators: true },function(err, data) {
         if (err) {
-            console.log(' ******* ERR at UPDATE PET route ****** : ', err);
+            console.log(' ******* SERVER - ERR at UPDATE PRODUCT route ****** : ', err);
             res.json( {message: "Error", error: err} ) } 
         else {
-            console.log(' ******* (SUCCESS) DATA at UPDATE PET route  ****** : ', data);
+            console.log(' ******* SERVER - (SUCCESS) DATA at UPDATE PRODUCT route  ****** : ', data);
             res.json( {message: "Success", data : data} ) };
     });
 });
-
-
-
-
-
-app.put('/pets/:id/like', function(req,res) {
-    console.log('***** PUT LIKE /pets/' + req.params.id +'/like - routes.js ****** ');
-    Pet.findOneAndUpdate({_id: req.params.id}, {$inc: {likes:1 }},function(err,data){
-        if(err){
-            console.log(' ******* ERR at UPDATE-LIKE route ****** : ', err);
-            res.json( {message: "Error", error: err} ) }
-        else {
-            console.log(' ******* (SUCCESS) DATA at UPDATE LIKE route  ****** : ', data);
-            res.json( {message: "Success", data : data} ) };
-    });
-});
-
-
+// localhost:8000/product/5a94aab3961f695921ec0015
+// {
+//     "name": "bbbbb",
+//     "quantity": 20,
+//     "price": 100
+// }
+// {
+//     "message": "Success",
+//     "data": [
+//         {
+//             "quantity": [
+//                 20
+//             ],
+//             "price": [
+//                 100
+//             ],
+//             "_id": "5a94aab3961f695921ec0015",
+//             "name": "bbbbb",
+//             "createdAt": "2018-02-27T00:47:47.284Z",
+//             "updatedAt": "2018-02-27T00:49:11.091Z",
+//             "__v": 0
+//         }
+//     ]
+// }
+// 
+// 
+// 
 app.all('*', (req,res, next) => {
     res.sendFile(path.resolve('./public/dist/index.html'));
 });
@@ -199,5 +233,4 @@ app.listen(port, function(){
     console.log(`Pets is listening on ${port} `);
 });
 
-// git rebase origin/master
 
